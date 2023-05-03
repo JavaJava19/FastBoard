@@ -420,17 +420,6 @@ public class FastBoard {
         this.deleted = true;
     }
 
-    /**
-     * Return if the player has a prefix/suffix characters limit.
-     * By default, it returns true only in 1.12 or lower.
-     * This method can be overridden to fix compatibility with some versions support plugin.
-     *
-     * @return max length
-     */
-    protected boolean hasLinesMaxLength() {
-        return !VersionType.V1_13.isHigherOrEqual();
-    }
-
     private void checkLineNumber(int line, boolean checkInRange, boolean checkMax) {
         if (line < 0) {
             throw new IllegalArgumentException("Line number must be positive");
@@ -488,7 +477,7 @@ public class FastBoard {
     private void sendScorePacket(int score, ScoreboardAction action) throws Throwable {
         Object packet = PACKET_SB_SCORE.invoke();
 
-        setField(packet, String.class, COLOR_CODES[score], 0); // Player Name
+        setField(packet, String.class, COLOR_CODES[score] + ChatColor.RESET, 0); // Player Name
 
         if (VersionType.V1_8.isHigherOrEqual()) {
             setField(packet, ENUM_SB_ACTION, action == ScoreboardAction.REMOVE ? ENUM_SB_ACTION_REMOVE : ENUM_SB_ACTION_CHANGE);
@@ -509,7 +498,7 @@ public class FastBoard {
             throw new UnsupportedOperationException();
         }
 
-        int maxLength = hasLinesMaxLength() ? 16 : 1024;
+        int maxLength = 16;
         Object packet = PACKET_SB_TEAM.invoke();
 
         setField(packet, String.class, this.id + ':' + score); // Team name
@@ -565,7 +554,7 @@ public class FastBoard {
             }
 
             if (mode == TeamMode.CREATE) {
-                setField(packet, Collection.class, Collections.singletonList(COLOR_CODES[score])); // Players in the team
+                setField(packet, Collection.class, Collections.singletonList(COLOR_CODES[score] + ChatColor.RESET)); // Players in the team
             }
         }
 
